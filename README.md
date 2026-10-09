@@ -54,3 +54,10 @@ The existing signing observer found no certificate profiles in the MTG signing
 account on October 8, 2026. Public Trust profile readiness, a test signature and
 signed VM acceptance remain unverified. Phase 2 may add artifact grants and
 typed provisioning only after this foundation's live evidence is complete.
+
+Installation replaces the state directory and existing descendants' DACLs with
+SYSTEM/Administrators-only permissions; it does not retain unrelated explicit
+allow entries. Reparse points on the state path or descendants fail closed, and
+the bounded traversal completes before device key/checkpoint access. This uses
+Windows filesystem ACL APIs and still requires the disposable Windows acceptance
+checks; a Linux compilation is not runtime ACL proof.

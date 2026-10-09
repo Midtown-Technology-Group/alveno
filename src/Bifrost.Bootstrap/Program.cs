@@ -20,8 +20,7 @@ public static class Program
             {
                 var endpoint = Argument(args, "--endpoint");
                 if (!Uri.TryCreate(endpoint, UriKind.Absolute, out var uri) || uri.Scheme != "https" || uri.AbsolutePath != "/" || uri.Query.Length != 0 || uri.Fragment.Length != 0 || uri.UserInfo.Length != 0) throw new ArgumentException("https_endpoint_required");
-                Directory.CreateDirectory(directory);
-                ProcessFixed("icacls.exe", directory, "/inheritance:r", "/grant:r", "*S-1-5-18:(OI)(CI)F", "*S-1-5-32-544:(OI)(CI)F");
+                StateDirectory.Protect(directory);
                 var state = File.Exists(Path.Combine(directory, "checkpoint.json")) ? journal.Load() : new Checkpoint { Endpoint = endpoint };
                 if (state.Endpoint != endpoint) throw new InvalidOperationException("endpoint_change_requires_review");
                 journal.Save(state); // Installation ID must exist before any key/network operation.
