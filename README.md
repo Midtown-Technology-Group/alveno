@@ -50,8 +50,8 @@ reboot, after technician claim/approval. Capture its structured JSON plus the
 Workspace timeline; never include key material. This script is an acceptance
 procedure, not recorded evidence that the VM test has run.
 
-The existing signing observer found no certificate profiles in the MTG signing
-account on October 8, 2026. Public Trust profile readiness, a test signature and
+The existing signing observer again found no certificate profiles in the MTG signing
+account on October 9, 2026 (run37932331548). Public Trust profile readiness, a test signature and
 signed VM acceptance remain unverified. Phase 2 may add artifact grants and
 typed provisioning only after this foundation's live evidence is complete.
 
@@ -61,3 +61,11 @@ allow entries. Reparse points on the state path or descendants fail closed, and
 the bounded traversal completes before device key/checkpoint access. This uses
 Windows filesystem ACL APIs and still requires the disposable Windows acceptance
 checks; a Linux compilation is not runtime ACL proof.
+
+[Recorded Windows lab evidence](docs/acceptance/windows-native-aot-lab-2026-10-09/README.md)
+now verifies Native AOT compilation, 25 Windows checks, TPM non-exportability,
+restricted ACLs, SYSTEM task execution, live registration, offline reboot and
+idempotent reconnection. It is an unsigned development test; signed PPKG/OOBE
+and technician approval remain unverified. Read-only structured status is
+available during task execution; `scripts/Test-WindowsStatus.ps1` checks that
+regression on a disposable installed test fixture.
