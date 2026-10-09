@@ -1,0 +1,365 @@
+[
+  {
+    "name": "windows-registration",
+    "model": "Registration",
+    "valid": true,
+    "value": {
+      "contract_version": "bifrost.device-lifecycle/v1",
+      "installation_id": "11111111-1111-4111-8111-111111111111",
+      "client_kind": "windows_bootstrap",
+      "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "serial_number": "LAB-ONLY-001",
+      "architecture": "x64",
+      "boot_environment": "windows11",
+      "client_version": "0.1.0",
+      "observed_at": "2026-10-08T12:00:00Z"
+    }
+  },
+  {
+    "name": "manx-registration",
+    "model": "Registration",
+    "valid": true,
+    "value": {
+      "contract_version": "bifrost.device-lifecycle/v1",
+      "installation_id": "11111111-1111-4111-8111-111111111111",
+      "client_kind": "manx_recovery",
+      "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "serial_number": "LAB-ONLY-001",
+      "architecture": "x64",
+      "boot_environment": "linux_rescue",
+      "client_version": "0.1.0",
+      "observed_at": "2026-10-08T12:00:00Z"
+    }
+  },
+  {
+    "name": "checkpoint",
+    "model": "ClientEvent",
+    "valid": true,
+    "value": {
+      "contract_version": "bifrost.device-lifecycle/v1",
+      "session_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "installation_id": "11111111-1111-4111-8111-111111111111",
+      "sequence": 1,
+      "event_id": "22222222-2222-4222-8222-222222222222",
+      "event_type": "checkpoint",
+      "timestamp": "2026-10-08T12:00:00Z",
+      "payload": {
+        "boot_id": "33333333-3333-4333-8333-333333333333",
+        "checkpoint": "started",
+        "result": "ok"
+      }
+    }
+  },
+  {
+    "name": "unsupported-version",
+    "model": "Registration",
+    "valid": false,
+    "value": {
+      "contract_version": "bifrost.device-lifecycle/v99",
+      "installation_id": "11111111-1111-4111-8111-111111111111",
+      "client_kind": "windows_bootstrap",
+      "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "serial_number": "LAB-ONLY-001",
+      "architecture": "x64",
+      "boot_environment": "windows11",
+      "client_version": "0.1.0",
+      "observed_at": "2026-10-08T12:00:00Z"
+    }
+  },
+  {
+    "name": "malformed-event",
+    "model": "ClientEvent",
+    "valid": false,
+    "value": {
+      "contract_version": "bifrost.device-lifecycle/v1",
+      "session_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "installation_id": "11111111-1111-4111-8111-111111111111",
+      "sequence": 0,
+      "event_id": "22222222-2222-4222-8222-222222222222",
+      "event_type": "checkpoint",
+      "timestamp": "2026-10-08T12:00:00Z",
+      "payload": {
+        "boot_id": "33333333-3333-4333-8333-333333333333",
+        "checkpoint": "started",
+        "result": "ok"
+      }
+    }
+  },
+  {
+    "name": "arbitrary-command",
+    "model": "ClientEvent",
+    "valid": false,
+    "value": {
+      "contract_version": "bifrost.device-lifecycle/v1",
+      "session_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "installation_id": "11111111-1111-4111-8111-111111111111",
+      "sequence": 1,
+      "event_id": "22222222-2222-4222-8222-222222222222",
+      "event_type": "checkpoint",
+      "timestamp": "2026-10-08T12:00:00Z",
+      "payload": {
+        "boot_id": "33333333-3333-4333-8333-333333333333",
+        "checkpoint": "started",
+        "result": "ok",
+        "command": "whoami"
+      }
+    }
+  },
+  {
+    "name": "invalid-state",
+    "model": "Session",
+    "valid": false,
+    "value": {
+      "state": "provisioned"
+    }
+  },
+  {
+    "name": "pending-session",
+    "model": "Session",
+    "valid": true,
+    "value": {
+      "contract_version": "bifrost.device-lifecycle/v1",
+      "session_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "registration": {
+        "contract_version": "bifrost.device-lifecycle/v1",
+        "installation_id": "11111111-1111-4111-8111-111111111111",
+        "client_kind": "windows_bootstrap",
+        "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "serial_number": "LAB-ONLY-001",
+        "architecture": "x64",
+        "boot_environment": "windows11",
+        "client_version": "0.1.0",
+        "observed_at": "2026-10-08T12:00:00Z"
+      },
+      "identity_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "pairing_code": "ABCDEFGH",
+      "state": "awaiting_claim",
+      "revision": 1,
+      "last_sequence": 0,
+      "created_at": "2026-10-08T12:00:00Z",
+      "expires_at": "2026-10-09T12:00:00Z",
+      "last_seen_at": "2026-10-08T12:00:00Z",
+      "assignment": null,
+      "claimed_by": null,
+      "approved_by": null,
+      "events": [],
+      "operator_events": []
+    }
+  },
+  {
+    "name": "missing-journal",
+    "model": "Session",
+    "valid": false,
+    "value": {
+      "contract_version": "bifrost.device-lifecycle/v1",
+      "session_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "registration": {
+        "contract_version": "bifrost.device-lifecycle/v1",
+        "installation_id": "11111111-1111-4111-8111-111111111111",
+        "client_kind": "windows_bootstrap",
+        "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "serial_number": "LAB-ONLY-001",
+        "architecture": "x64",
+        "boot_environment": "windows11",
+        "client_version": "0.1.0",
+        "observed_at": "2026-10-08T12:00:00Z"
+      },
+      "identity_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "pairing_code": "ABCDEFGH",
+      "state": "awaiting_claim",
+      "revision": 1,
+      "last_sequence": 0,
+      "created_at": "2026-10-08T12:00:00Z",
+      "expires_at": "2026-10-09T12:00:00Z",
+      "last_seen_at": "2026-10-08T12:00:00Z",
+      "assignment": null,
+      "claimed_by": null,
+      "approved_by": null,
+      "operator_events": []
+    }
+  },
+  {
+    "name": "null-journal",
+    "model": "Session",
+    "valid": false,
+    "value": {
+      "contract_version": "bifrost.device-lifecycle/v1",
+      "session_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "registration": {
+        "contract_version": "bifrost.device-lifecycle/v1",
+        "installation_id": "11111111-1111-4111-8111-111111111111",
+        "client_kind": "windows_bootstrap",
+        "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "serial_number": "LAB-ONLY-001",
+        "architecture": "x64",
+        "boot_environment": "windows11",
+        "client_version": "0.1.0",
+        "observed_at": "2026-10-08T12:00:00Z"
+      },
+      "identity_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "pairing_code": "ABCDEFGH",
+      "state": "awaiting_claim",
+      "revision": 1,
+      "last_sequence": 0,
+      "created_at": "2026-10-08T12:00:00Z",
+      "expires_at": "2026-10-09T12:00:00Z",
+      "last_seen_at": "2026-10-08T12:00:00Z",
+      "assignment": null,
+      "claimed_by": null,
+      "approved_by": null,
+      "events": null,
+      "operator_events": []
+    }
+  },
+  {
+    "name": "malformed-nested-event",
+    "model": "Session",
+    "valid": false,
+    "value": {
+      "contract_version": "bifrost.device-lifecycle/v1",
+      "session_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "registration": {
+        "contract_version": "bifrost.device-lifecycle/v1",
+        "installation_id": "11111111-1111-4111-8111-111111111111",
+        "client_kind": "windows_bootstrap",
+        "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "serial_number": "LAB-ONLY-001",
+        "architecture": "x64",
+        "boot_environment": "windows11",
+        "client_version": "0.1.0",
+        "observed_at": "2026-10-08T12:00:00Z"
+      },
+      "identity_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "pairing_code": "ABCDEFGH",
+      "state": "awaiting_claim",
+      "revision": 1,
+      "last_sequence": 0,
+      "created_at": "2026-10-08T12:00:00Z",
+      "expires_at": "2026-10-09T12:00:00Z",
+      "last_seen_at": "2026-10-08T12:00:00Z",
+      "assignment": null,
+      "claimed_by": null,
+      "approved_by": null,
+      "events": [
+        {
+          "contract_version": "bifrost.device-lifecycle/v1",
+          "session_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "installation_id": "11111111-1111-4111-8111-111111111111",
+          "sequence": 0,
+          "event_id": "22222222-2222-4222-8222-222222222222",
+          "event_type": "checkpoint",
+          "timestamp": "2026-10-08T12:00:00Z",
+          "payload": {
+            "boot_id": "33333333-3333-4333-8333-333333333333",
+            "checkpoint": "started",
+            "result": "ok"
+          }
+        }
+      ],
+      "operator_events": []
+    }
+  },
+  {
+    "name": "invalid-assignment",
+    "model": "Session",
+    "valid": false,
+    "value": {
+      "contract_version": "bifrost.device-lifecycle/v1",
+      "session_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "registration": {
+        "contract_version": "bifrost.device-lifecycle/v1",
+        "installation_id": "11111111-1111-4111-8111-111111111111",
+        "client_kind": "windows_bootstrap",
+        "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "serial_number": "LAB-ONLY-001",
+        "architecture": "x64",
+        "boot_environment": "windows11",
+        "client_version": "0.1.0",
+        "observed_at": "2026-10-08T12:00:00Z"
+      },
+      "identity_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "pairing_code": "ABCDEFGH",
+      "state": "awaiting_claim",
+      "revision": 1,
+      "last_sequence": 0,
+      "created_at": "2026-10-08T12:00:00Z",
+      "expires_at": "2026-10-09T12:00:00Z",
+      "last_seen_at": "2026-10-08T12:00:00Z",
+      "assignment": {
+        "organization_id": "not-a-uuid",
+        "organization_name": "Lab",
+        "halo_ticket_id": 1,
+        "device_id": "serial:LAB001"
+      },
+      "claimed_by": null,
+      "approved_by": null,
+      "events": [],
+      "operator_events": []
+    }
+  },
+  {
+    "name": "missing-sequence",
+    "model": "Session",
+    "valid": false,
+    "value": {
+      "contract_version": "bifrost.device-lifecycle/v1",
+      "session_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "registration": {
+        "contract_version": "bifrost.device-lifecycle/v1",
+        "installation_id": "11111111-1111-4111-8111-111111111111",
+        "client_kind": "windows_bootstrap",
+        "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "serial_number": "LAB-ONLY-001",
+        "architecture": "x64",
+        "boot_environment": "windows11",
+        "client_version": "0.1.0",
+        "observed_at": "2026-10-08T12:00:00Z"
+      },
+      "identity_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "pairing_code": "ABCDEFGH",
+      "state": "awaiting_claim",
+      "revision": 1,
+      "created_at": "2026-10-08T12:00:00Z",
+      "expires_at": "2026-10-09T12:00:00Z",
+      "last_seen_at": "2026-10-08T12:00:00Z",
+      "assignment": null,
+      "claimed_by": null,
+      "approved_by": null,
+      "events": [],
+      "operator_events": []
+    }
+  },
+  {
+    "name": "invalid-claimed-actor",
+    "model": "Session",
+    "valid": false,
+    "value": {
+      "contract_version": "bifrost.device-lifecycle/v1",
+      "session_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "registration": {
+        "contract_version": "bifrost.device-lifecycle/v1",
+        "installation_id": "11111111-1111-4111-8111-111111111111",
+        "client_kind": "windows_bootstrap",
+        "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "serial_number": "LAB-ONLY-001",
+        "architecture": "x64",
+        "boot_environment": "windows11",
+        "client_version": "0.1.0",
+        "observed_at": "2026-10-08T12:00:00Z"
+      },
+      "identity_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "pairing_code": "ABCDEFGH",
+      "state": "awaiting_claim",
+      "revision": 1,
+      "last_sequence": 0,
+      "created_at": "2026-10-08T12:00:00Z",
+      "expires_at": "2026-10-09T12:00:00Z",
+      "last_seen_at": "2026-10-08T12:00:00Z",
+      "assignment": null,
+      "claimed_by": "not-a-uuid",
+      "approved_by": null,
+      "events": [],
+      "operator_events": []
+    }
+  }
+]

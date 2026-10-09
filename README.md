@@ -15,7 +15,7 @@ source, media, state files and logs.
 
 ```sh
 dotnet build src/Bifrost.Bootstrap -p:PublishAot=false
-dotnet run --project tests/Bifrost.Bootstrap.Tests
+dotnet run --project tests/Bifrost.Bootstrap.Tests -p:PublishAot=false
 ```
 
 On a Windows host with the Visual C++/Windows SDK Native AOT prerequisites:
@@ -34,3 +34,38 @@ The startup task also repeats every minute, performs bounded work, and exits.
 Checkpoint/event writes are atomic; pending events stay durable until matched
 against server acknowledgment. No automatic uninstall occurs in Phase 1.
 Explicit rollback unregisters the task while retaining state for investigation.
+
+`scripts/Build-Windows.ps1` runs the shared fixtures and publishes win-x64 Native
+AOT with the Windows Visual C++ toolchain. Its output is an unsigned build,
+requiring protected signing before installer or OOBE acceptance. The private
+repository has no approved Windows CI runner; do not add a GitHub-hosted fallback
+around MTG's private CI policy. A disposable Windows build VM is the lab path.
+
+`scripts/Build-ProvisioningPackage.ps1` uses Windows Configuration Designer and
+the same verified installer as manual installation. The package contains only
+the signed executable, finite local installer and public trust metadata. It
+does not create users, bypass OOBE, embed passwords or contain an enrollment key.
+Run `Test-WindowsAcceptance.ps1` in a disposable VM before and after a real
+reboot, after technician claim/approval. Capture its structured JSON plus the
+Workspace timeline; never include key material. This script is an acceptance
+procedure, not recorded evidence that the VM test has run.
+
+The existing signing observer again found no certificate profiles in the MTG signing
+account on October 9, 2026 (run37932331548). Public Trust profile readiness, a test signature and
+signed VM acceptance remain unverified. Phase 2 may add artifact grants and
+typed provisioning only after this foundation's live evidence is complete.
+
+Installation replaces the state directory and existing descendants' DACLs with
+SYSTEM/Administrators-only permissions; it does not retain unrelated explicit
+allow entries. Reparse points on the state path or descendants fail closed, and
+the bounded traversal completes before device key/checkpoint access. This uses
+Windows filesystem ACL APIs and still requires the disposable Windows acceptance
+checks; a Linux compilation is not runtime ACL proof.
+
+[Recorded Windows lab evidence](docs/acceptance/windows-native-aot-lab-2026-10-09/README.md)
+now verifies Native AOT compilation, 25 Windows checks, TPM non-exportability,
+restricted ACLs, SYSTEM task execution, live registration, offline reboot and
+idempotent reconnection. It is an unsigned development test; signed PPKG/OOBE
+and technician approval remain unverified. Read-only structured status is
+available during task execution; `scripts/Test-WindowsStatus.ps1` checks that
+regression on a disposable installed test fixture.

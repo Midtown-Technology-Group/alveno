@@ -1,0 +1,486 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.midtowntg.com/bifrost/device-lifecycle/v1",
+  "title": "BiFrost device lifecycle v1",
+  "definitions": {
+    "Registration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "type": "string",
+          "const": "bifrost.device-lifecycle/v1"
+        },
+        "installation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "client_kind": {
+          "type": "string",
+          "enum": [
+            "windows_bootstrap",
+            "manx_recovery"
+          ]
+        },
+        "public_key": {
+          "type": "string",
+          "minLength": 100,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9+/]+={0,2}$"
+        },
+        "serial_number": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "smbios_uuid": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "manufacturer": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "model": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "architecture": {
+          "type": "string",
+          "enum": [
+            "x64",
+            "arm64",
+            "x86",
+            "unknown"
+          ]
+        },
+        "boot_environment": {
+          "type": "string",
+          "enum": [
+            "windows11",
+            "linux_rescue"
+          ]
+        },
+        "client_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "contract_version",
+        "installation_id",
+        "client_kind",
+        "public_key",
+        "architecture",
+        "boot_environment",
+        "client_version",
+        "observed_at"
+      ]
+    },
+    "EventPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "boot_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "checkpoint": {
+          "type": "string",
+          "enum": [
+            "started",
+            "registered",
+            "approval_observed",
+            "diagnostic_collected",
+            "reconnected",
+            "handoff_verified"
+          ]
+        },
+        "result": {
+          "type": "string",
+          "enum": [
+            "ok",
+            "unavailable",
+            "intervention_required"
+          ]
+        },
+        "diagnostic": {
+          "type": "string",
+          "enum": [
+            "hardware_inventory",
+            "network_connectivity",
+            "session_recovery"
+          ]
+        }
+      },
+      "required": [
+        "boot_id",
+        "checkpoint",
+        "result"
+      ]
+    },
+    "ClientEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "type": "string",
+          "const": "bifrost.device-lifecycle/v1"
+        },
+        "session_id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "installation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4096
+        },
+        "event_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "event_type": {
+          "type": "string",
+          "enum": [
+            "checkpoint",
+            "diagnostic",
+            "intervention_requested",
+            "handoff_ready",
+            "handoff_verified"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payload": {
+          "$ref": "#/definitions/EventPayload"
+        }
+      },
+      "required": [
+        "contract_version",
+        "session_id",
+        "installation_id",
+        "sequence",
+        "event_id",
+        "event_type",
+        "timestamp",
+        "payload"
+      ]
+    },
+    "Heartbeat": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "type": "string",
+          "const": "bifrost.device-lifecycle/v1"
+        },
+        "installation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "boot_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "contract_version",
+        "installation_id",
+        "boot_id"
+      ]
+    },
+    "Assignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "organization_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "organization_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "halo_ticket_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "device_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "organization_id",
+        "organization_name",
+        "halo_ticket_id",
+        "device_id"
+      ]
+    },
+    "OperatorMutation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "type": "string",
+          "const": "bifrost.device-lifecycle/v1"
+        },
+        "request_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "actor_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "session_id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "expected_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "identity_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "pairing_code": {
+          "type": "string",
+          "pattern": "^[A-Z2-9]{8}$"
+        },
+        "assignment": {
+          "$ref": "#/definitions/Assignment"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "technician_approved",
+            "technician_rejected",
+            "identity_collision",
+            "technician_cancelled"
+          ]
+        }
+      },
+      "required": [
+        "contract_version",
+        "request_id",
+        "actor_id",
+        "session_id",
+        "expected_revision",
+        "identity_sha256",
+        "pairing_code"
+      ]
+    },
+    "Session": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "type": "string",
+          "const": "bifrost.device-lifecycle/v1"
+        },
+        "session_id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "registration": {
+          "$ref": "#/definitions/Registration"
+        },
+        "identity_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "pairing_code": {
+          "type": "string",
+          "pattern": "^[A-Z2-9]{8}$"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "registered",
+            "awaiting_claim",
+            "claimed",
+            "approved",
+            "handoff_ready",
+            "completed",
+            "intervention_required",
+            "rejected",
+            "expired",
+            "cancelled",
+            "failed"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "last_sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "last_seen_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "assignment": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Assignment"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "claimed_by": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "approved_by": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ClientEvent"
+          },
+          "maxItems": 4096
+        },
+        "operator_events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OperatorEvent"
+          },
+          "maxItems": 256
+        },
+        "resume_state": {
+          "type": "string",
+          "enum": [
+            "registered",
+            "awaiting_claim",
+            "claimed",
+            "approved",
+            "handoff_ready",
+            "completed",
+            "intervention_required",
+            "rejected",
+            "expired",
+            "cancelled",
+            "failed"
+          ]
+        }
+      },
+      "required": [
+        "contract_version",
+        "session_id",
+        "registration",
+        "identity_sha256",
+        "pairing_code",
+        "state",
+        "revision",
+        "last_sequence",
+        "created_at",
+        "expires_at",
+        "last_seen_at",
+        "assignment",
+        "claimed_by",
+        "approved_by",
+        "events",
+        "operator_events"
+      ]
+    },
+    "OperatorEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event_id",
+        "revision",
+        "actor_id",
+        "operation",
+        "timestamp",
+        "state"
+      ],
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "actor_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "claim",
+            "approve",
+            "reject",
+            "cancel",
+            "resume"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "registered",
+            "awaiting_claim",
+            "claimed",
+            "approved",
+            "handoff_ready",
+            "completed",
+            "intervention_required",
+            "rejected",
+            "expired",
+            "cancelled",
+            "failed"
+          ]
+        }
+      }
+    }
+  }
+}

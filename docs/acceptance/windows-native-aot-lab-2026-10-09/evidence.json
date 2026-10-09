@@ -1,0 +1,257 @@
+{
+  "contract_version": "bifrost.device-lifecycle/v1",
+  "phase1_complete": false,
+  "environment": "disposable Windows 11 build VM127 on pve-t340",
+  "endpoint": "https://bifrost-device-lifecycle-lab.midtown-technology-group.workers.dev",
+  "worker_deployment_version": "1cadfc7d-77ad-4df3-9b72-0b71c0d426b3",
+  "source_archive_sha256": "612cfbfcb4e61bb405df3dfdfd187cf3d874f7262cad8804e8f45297b0296877",
+  "toolchain": {
+    "dotnet_sdk": "10.0.401",
+    "visual_studio_build_tools": "2022",
+    "publisher_signatures_verified": true,
+    "dotnet_sdk_sha512": "24b670ad3d923bfcf47df6c3b034152398b42f6dbc388e10d783aee1cfb5e5817d399fc0ae2a12cfa822a55e61d34830ccb15c50ef6efee437ab874bb7c79430",
+    "build_tools_sha256": "985969F472CAAD75D993A5CB4C35A6A4271460CC12B343E2433B994D173AA990"
+  },
+  "tests": {
+    "windows_contract_checkpoint_acl_reparse_machine_key_checks_passed": 25,
+    "linux_cross_platform_checks_passed": 19
+  },
+  "build": {
+    "source_sha": "5a965c5708d551e90f8b71e4899c521f5bc26179",
+    "sha256": "B9AE92C215FFCC860D2170D549D819F377C24B6F2652E4357F323B780A03E0EB",
+    "authenticode_status": "NotSigned",
+    "observed_at": "2026-10-09T13:48:13.6996589+00:00"
+  },
+  "before_reboot": {
+    "observed_at": "2026-10-09T13:48:20.0731537+00:00",
+    "source_sha": "5a965c5708d551e90f8b71e4899c521f5bc26179",
+    "binary_sha256": "B9AE92C215FFCC860D2170D549D819F377C24B6F2652E4357F323B780A03E0EB",
+    "status_during_execution_lock": "passed",
+    "signed_release_acceptance": false,
+    "fresh_oobe_acceptance": false,
+    "status": {
+      "installation_id": "9adf27e0-8f73-40ae-8635-e8db616d3301",
+      "session_id": "62d0d423cfc987f2702569e6e666f6a935d25f751470301d6ce9cbb6e8bd1350",
+      "pairing_code": "J2B23U7Q",
+      "state": "awaiting_claim",
+      "last_outcome": "connected",
+      "last_seen_at": "2026-10-09T13:48:16.700Z",
+      "boot_id": "57f1cbd3-2eb8-48be-8176-a04796670e89",
+      "acknowledged_sequence": 2,
+      "pending_events": 0,
+      "software_key_fallback": false
+    },
+    "task_user": "SYSTEM",
+    "task_run_level": "Highest",
+    "task_last_result": 0,
+    "state_acl_verified": true,
+    "tpm_nonexportable_machine_key_verified": true,
+    "boot": "2026-10-09T13:34:01.5000000Z"
+  },
+  "offline_after_reboot": {
+    "phase": "OfflineAfterReboot",
+    "observed_at": "2026-10-09T13:54:08.7594850+00:00",
+    "source_sha": "5a965c5708d551e90f8b71e4899c521f5bc26179",
+    "installed_binary_sha256": "B9AE92C215FFCC860D2170D549D819F377C24B6F2652E4357F323B780A03E0EB",
+    "signed_release_acceptance": false,
+    "fresh_oobe_acceptance": false,
+    "status": {
+      "installation_id": "9adf27e0-8f73-40ae-8635-e8db616d3301",
+      "session_id": "62d0d423cfc987f2702569e6e666f6a935d25f751470301d6ce9cbb6e8bd1350",
+      "pairing_code": "J2B23U7Q",
+      "state": "awaiting_claim",
+      "last_outcome": "network_unavailable",
+      "last_seen_at": "2026-10-09T13:49:17.609Z",
+      "boot_id": "4d361abe-edf1-4b15-b634-b39b5e518d03",
+      "acknowledged_sequence": 2,
+      "pending_events": 1,
+      "software_key_fallback": false
+    },
+    "boot": "2026-10-09T13:50:14.5000000Z",
+    "registration": {
+      "client_kind": "windows_bootstrap",
+      "serial_number": "MTG-LAB-WINBUILD127",
+      "smbios_uuid": "667ac073-8e67-4346-a8de-b4fc9a102c09",
+      "manufacturer": "MTG",
+      "model": "BiFrost-Phase1-Build-Lab",
+      "architecture": "x64",
+      "boot_environment": "windows11",
+      "client_version": "0.1.0"
+    },
+    "events": [
+      {
+        "event_id": "d4ef1408-1f45-4bc9-a0a0-2ea63d7b3a01",
+        "sequence": 1,
+        "event_type": "checkpoint",
+        "timestamp": "2026-10-09T13:28:17.5462863+00:00",
+        "payload": {
+          "boot_id": "07c5bf14-acb0-4cff-8a73-0206b5f2c075",
+          "checkpoint": "registered",
+          "result": "ok"
+        }
+      },
+      {
+        "event_id": "096f4761-9dc9-4103-b641-43eb4cc36704",
+        "sequence": 2,
+        "event_type": "checkpoint",
+        "timestamp": "2026-10-09T13:34:35.3939136+00:00",
+        "payload": {
+          "boot_id": "57f1cbd3-2eb8-48be-8176-a04796670e89",
+          "checkpoint": "reconnected",
+          "result": "ok"
+        }
+      }
+    ],
+    "task_user": "SYSTEM",
+    "task_last_result": 0
+  },
+  "reconnected": {
+    "phase": "Reconnected",
+    "observed_at": "2026-10-09T13:55:21.5975806+00:00",
+    "source_sha": "5a965c5708d551e90f8b71e4899c521f5bc26179",
+    "installed_binary_sha256": "B9AE92C215FFCC860D2170D549D819F377C24B6F2652E4357F323B780A03E0EB",
+    "signed_release_acceptance": false,
+    "fresh_oobe_acceptance": false,
+    "status": {
+      "installation_id": "9adf27e0-8f73-40ae-8635-e8db616d3301",
+      "session_id": "62d0d423cfc987f2702569e6e666f6a935d25f751470301d6ce9cbb6e8bd1350",
+      "pairing_code": "J2B23U7Q",
+      "state": "awaiting_claim",
+      "last_outcome": "connected",
+      "last_seen_at": "2026-10-09T13:55:17.830Z",
+      "boot_id": "4d361abe-edf1-4b15-b634-b39b5e518d03",
+      "acknowledged_sequence": 3,
+      "pending_events": 0,
+      "software_key_fallback": false
+    },
+    "boot": "2026-10-09T13:50:14.5000000Z",
+    "registration": {
+      "client_kind": "windows_bootstrap",
+      "serial_number": "MTG-LAB-WINBUILD127",
+      "smbios_uuid": "667ac073-8e67-4346-a8de-b4fc9a102c09",
+      "manufacturer": "MTG",
+      "model": "BiFrost-Phase1-Build-Lab",
+      "architecture": "x64",
+      "boot_environment": "windows11",
+      "client_version": "0.1.0"
+    },
+    "events": [
+      {
+        "event_id": "d4ef1408-1f45-4bc9-a0a0-2ea63d7b3a01",
+        "sequence": 1,
+        "event_type": "checkpoint",
+        "timestamp": "2026-10-09T13:28:17.5462863+00:00",
+        "payload": {
+          "boot_id": "07c5bf14-acb0-4cff-8a73-0206b5f2c075",
+          "checkpoint": "registered",
+          "result": "ok"
+        }
+      },
+      {
+        "event_id": "096f4761-9dc9-4103-b641-43eb4cc36704",
+        "sequence": 2,
+        "event_type": "checkpoint",
+        "timestamp": "2026-10-09T13:34:35.3939136+00:00",
+        "payload": {
+          "boot_id": "57f1cbd3-2eb8-48be-8176-a04796670e89",
+          "checkpoint": "reconnected",
+          "result": "ok"
+        }
+      },
+      {
+        "event_id": "444bf199-c4eb-426b-8434-9bb94a5244d2",
+        "sequence": 3,
+        "event_type": "checkpoint",
+        "timestamp": "2026-10-09T13:50:41.6139434+00:00",
+        "payload": {
+          "boot_id": "4d361abe-edf1-4b15-b634-b39b5e518d03",
+          "checkpoint": "reconnected",
+          "result": "ok"
+        }
+      }
+    ],
+    "task_user": "SYSTEM",
+    "task_last_result": 0
+  },
+  "repeated_sync": {
+    "phase": "Repeated",
+    "observed_at": "2026-10-09T13:59:19.4632874+00:00",
+    "source_sha": "5a965c5708d551e90f8b71e4899c521f5bc26179",
+    "installed_binary_sha256": "B9AE92C215FFCC860D2170D549D819F377C24B6F2652E4357F323B780A03E0EB",
+    "signed_release_acceptance": false,
+    "fresh_oobe_acceptance": false,
+    "status": {
+      "installation_id": "9adf27e0-8f73-40ae-8635-e8db616d3301",
+      "session_id": "62d0d423cfc987f2702569e6e666f6a935d25f751470301d6ce9cbb6e8bd1350",
+      "pairing_code": "J2B23U7Q",
+      "state": "awaiting_claim",
+      "last_outcome": "connected",
+      "last_seen_at": "2026-10-09T13:59:17.451Z",
+      "boot_id": "4d361abe-edf1-4b15-b634-b39b5e518d03",
+      "acknowledged_sequence": 3,
+      "pending_events": 0,
+      "software_key_fallback": false
+    },
+    "boot": "2026-10-09T13:50:14.5000000Z",
+    "registration": {
+      "client_kind": "windows_bootstrap",
+      "serial_number": "MTG-LAB-WINBUILD127",
+      "smbios_uuid": "667ac073-8e67-4346-a8de-b4fc9a102c09",
+      "manufacturer": "MTG",
+      "model": "BiFrost-Phase1-Build-Lab",
+      "architecture": "x64",
+      "boot_environment": "windows11",
+      "client_version": "0.1.0"
+    },
+    "events": [
+      {
+        "event_id": "d4ef1408-1f45-4bc9-a0a0-2ea63d7b3a01",
+        "sequence": 1,
+        "event_type": "checkpoint",
+        "timestamp": "2026-10-09T13:28:17.5462863+00:00",
+        "payload": {
+          "boot_id": "07c5bf14-acb0-4cff-8a73-0206b5f2c075",
+          "checkpoint": "registered",
+          "result": "ok"
+        }
+      },
+      {
+        "event_id": "096f4761-9dc9-4103-b641-43eb4cc36704",
+        "sequence": 2,
+        "event_type": "checkpoint",
+        "timestamp": "2026-10-09T13:34:35.3939136+00:00",
+        "payload": {
+          "boot_id": "57f1cbd3-2eb8-48be-8176-a04796670e89",
+          "checkpoint": "reconnected",
+          "result": "ok"
+        }
+      },
+      {
+        "event_id": "444bf199-c4eb-426b-8434-9bb94a5244d2",
+        "sequence": 3,
+        "event_type": "checkpoint",
+        "timestamp": "2026-10-09T13:50:41.6139434+00:00",
+        "payload": {
+          "boot_id": "4d361abe-edf1-4b15-b634-b39b5e518d03",
+          "checkpoint": "reconnected",
+          "result": "ok"
+        }
+      }
+    ],
+    "task_user": "SYSTEM",
+    "task_last_result": 0
+  },
+  "unverified": [
+    "signed_release",
+    "generic_ppkg",
+    "fresh_oobe",
+    "technician_claim_approval",
+    "workspace_projection",
+    "customer_provisioning"
+  ],
+  "initial_registration_candidate": {
+    "source_sha": "2514a7dd602b8ae557a499d49c4d60c680f331f6",
+    "binary_sha256": "4972432299f3921df37b4031561cfe9fb87b42d44f6b0022843eb36045d6153f",
+    "task_xml_corrected_in_lab_probe": true
+  }
+}
