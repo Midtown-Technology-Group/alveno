@@ -1,0 +1,31 @@
+name: Windows validation
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 25
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          dotnet-version: 10.0.401
+      - name: Parse PowerShell scripts
+        run: |
+          Get-ChildItem scripts,tests -Filter *.ps1 | ForEach-Object {
+            $errors = $null
+            [Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$null, [ref]$errors) | Out-Null
+            if ($errors.Count) { throw "PowerShell parse failed: $($_.Name)" }
+          }
+      - name: Test and build Native AOT
+        run: ./scripts/Build-Windows.ps1
+      - name: Reject tampered roots and unsigned artifacts
+        run: ./tests/Test-LabSigningGuards.ps1 -UnsignedExecutable dist/win-x64/bifrost-bootstrap.exe
