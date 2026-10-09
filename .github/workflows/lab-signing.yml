@@ -1,0 +1,97 @@
+name: Build and sign disposable lab bootstrap
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: private-lab-signing
+  cancel-in-progress: false
+jobs:
+  sign:
+    if: github.ref == 'refs/heads/main'
+    runs-on: windows-2022
+    environment: lab-artifact-signing
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      SIGNING_CLIENT_ID: ${{ vars.AZURE_SIGNING_CLIENT_ID }}
+      SIGNING_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      PUBLISHER_SUBJECT: ${{ vars.LAB_PUBLISHER_SUBJECT }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Require configured signing identity and publisher
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          foreach ($name in 'SIGNING_CLIENT_ID', 'SIGNING_TENANT_ID', 'PUBLISHER_SUBJECT') {
+            if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name))) { throw "Missing protected environment configuration: $name" }
+          }
+          $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; 'X-GitHub-Api-Version' = '2022-11-28' }
+          $base = 'https://api.github.com/repos/Midtown-Technology-Group/bifrost-device-bootstrap'
+          $environment = Invoke-RestMethod "$base/environments/lab-artifact-signing" -Headers $headers
+          $policy = $environment.deployment_branch_policy
+          if (-not $policy) { throw 'Signing environment must restrict deployment branches.' }
+          if ($policy.protected_branches) {
+            $main = Invoke-RestMethod "$base/branches/main" -Headers $headers
+            if (-not $main.protected) { throw 'Signing requires protected main or an exact main deployment policy.' }
+          } elseif ($policy.custom_branch_policies) {
+            $rules = Invoke-RestMethod "$base/environments/lab-artifact-signing/deployment-branch-policies" -Headers $headers
+            if ($rules.total_count -ne 1 -or $rules.branch_policies[0].name -cne 'main' -or $rules.branch_policies[0].type -eq 'tag') { throw 'Signing deployment policy must allow only main.' }
+          } else { throw 'Signing environment protection is unsupported.' }
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          dotnet-version: 10.0.401
+      - name: Test and build Windows x64 Native AOT
+        run: |
+          ./scripts/Build-Windows.ps1
+          "UNSIGNED_SHA256=$((Get-FileHash dist/win-x64/bifrost-bootstrap.exe -Algorithm SHA256).Hash)" >> $env:GITHUB_ENV
+      - uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ vars.AZURE_SIGNING_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: a1d63b24-1202-4bfa-9086-cf32d1d352fc
+      - name: Verify exact active Private Trust profile
+        run: |
+          $url = 'https://management.azure.com/subscriptions/a1d63b24-1202-4bfa-9086-cf32d1d352fc/resourceGroups/rg-sopdet-signing/providers/Microsoft.CodeSigning/codeSigningAccounts/mtg-sopdet-signing/certificateProfiles/mtg-lab-profile?api-version=2025-10-13'
+          $metadata = az rest --method get --url $url --query '{name:name,type:properties.profileType,status:properties.status}' --only-show-errors -o json
+          if ($LASTEXITCODE -ne 0) { throw 'Profile read authorization failed.' }
+          $profile = $metadata | ConvertFrom-Json
+          if ($profile.name -ne 'mtg-lab-profile' -or $profile.type -ne 'PrivateTrust' -or $profile.status -ne 'Active') { throw 'Unexpected or inactive signing profile.' }
+      - name: Sign only bootstrap executable
+        uses: Azure/artifact-signing-action@c7ab2a863ab5f9a846ddb8265964877ef296ee82 # v2
+        with:
+          endpoint: https://eus.codesigning.azure.net/
+          signing-account-name: mtg-sopdet-signing
+          certificate-profile-name: mtg-lab-profile
+          files: ${{ github.workspace }}\dist\win-x64\bifrost-bootstrap.exe
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+          exclude-environment-credential: true
+          exclude-workload-identity-credential: true
+          exclude-managed-identity-credential: true
+          exclude-shared-token-cache-credential: true
+          exclude-visual-studio-credential: true
+          exclude-visual-studio-code-credential: true
+          exclude-azure-cli-credential: false
+          exclude-azure-powershell-credential: true
+          exclude-azure-developer-cli-credential: true
+          exclude-interactive-browser-credential: true
+      - name: Verify and stage lab artifact
+        run: |
+          ./scripts/Trust-LabSigningRoot.ps1 -CertificatePath docs/signing/microsoft-private-trust-root-2020.cer -StoreLocation CurrentUser -DisposableLab
+          New-Item -ItemType Directory lab-release | Out-Null
+          ./scripts/Verify-LabSignedArtifact.ps1 -Executable dist/win-x64/bifrost-bootstrap.exe -PublisherSubject $env:PUBLISHER_SUBJECT -UnsignedSha256 $env:UNSIGNED_SHA256 -SourceCommit $env:GITHUB_SHA -OutputPath lab-release/signing-evidence.json
+          Copy-Item dist/win-x64/bifrost-bootstrap.exe lab-release/
+          Copy-Item docs/signing/microsoft-private-trust-root-2020.cer lab-release/
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: bifrost-bootstrap-private-lab-${{ github.sha }}
+          path: lab-release/
+          if-no-files-found: error
+          retention-days: 7
