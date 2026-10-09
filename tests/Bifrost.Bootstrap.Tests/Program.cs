@@ -1,4 +1,6 @@
 using System.Security.Cryptography;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Text.Json;
 using Bifrost.Bootstrap;
 using Bifrost.DeviceLifecycle;
@@ -52,4 +54,53 @@ try
     Require(refused && journal.Load().PendingEvents.Count == 1, "conflict erased pending event"); passed++;
 }
 finally { Directory.Delete(directory, true); }
+if (OperatingSystem.IsWindows())
+{
+    var securityRoot = Path.Combine(Path.GetTempPath(), "bifrost-security-test-" + Guid.NewGuid());
+    var protectedPath = Path.Combine(securityRoot, "state");
+    var outsidePath = Path.Combine(securityRoot, "outside");
+    Directory.CreateDirectory(protectedPath); Directory.CreateDirectory(outsidePath);
+    var file = new FileInfo(Path.Combine(protectedPath, "existing.json")); File.WriteAllText(file.FullName, "{}");
+    var users = new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
+    var prior = file.GetAccessControl();
+    prior.AddAccessRule(new FileSystemAccessRule(users, FileSystemRights.Read, AccessControlType.Allow));
+    file.SetAccessControl(prior);
+    try
+    {
+        StateDirectory.Protect(protectedPath);
+        foreach (var security in new FileSystemSecurity[] { new DirectoryInfo(protectedPath).GetAccessControl(), file.GetAccessControl() })
+        {
+            var rules = security.GetAccessRules(true, true, typeof(SecurityIdentifier)).Cast<FileSystemAccessRule>().ToArray();
+            Require(security.AreAccessRulesProtected && rules.Length == 2 && rules.All(rule => OperatingSystem.IsWindows() &&
+                rule.AccessControlType == AccessControlType.Allow && rule.FileSystemRights == FileSystemRights.FullControl &&
+                rule.IdentityReference.Value is "S-1-5-18" or "S-1-5-32-544"), "state retained untrusted access"); passed++;
+        }
+        var link = Path.Combine(protectedPath, "redirect"); Directory.CreateSymbolicLink(link, outsidePath);
+        try
+        {
+            bool refused = false;
+            try { StateDirectory.Protect(protectedPath); } catch (IOException) { refused = true; }
+            Require(refused, "state followed a descendant reparse point"); passed++;
+            refused = false;
+            try { StateDirectory.Protect(Path.Combine(link, "nested")); } catch (IOException) { refused = true; }
+            Require(refused && !Directory.Exists(Path.Combine(outsidePath, "nested")), "state followed an ancestor reparse point"); passed++;
+        }
+        finally { Directory.Delete(link); }
+        var machineState = new Checkpoint();
+        using var deviceKey = (ECDsaCng)DeviceKey.Open(machineState, true);
+        try
+        {
+            Require(deviceKey.Key.IsMachineKey && deviceKey.Key.ExportPolicy == CngExportPolicies.None,
+                "device key is exportable or user scoped"); passed++;
+            var message = RandomNumberGenerator.GetBytes(32);
+            var signature = deviceKey.SignData(message, HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363FixedFieldConcatenation);
+            using var reopened = DeviceKey.Open(machineState, false);
+            Require(reopened.VerifyData(message, signature, HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363FixedFieldConcatenation),
+                "reopened machine key changed device identity"); passed++;
+            Console.WriteLine("Windows non-exportable machine key provider: " + machineState.KeyProvider);
+        }
+        finally { deviceKey.Key.Delete(); }
+    }
+    finally { Directory.Delete(securityRoot, true); }
+}
 Console.WriteLine($"{passed} contract and checkpoint/reconciliation checks passed.");
