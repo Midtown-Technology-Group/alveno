@@ -1,0 +1,8 @@
+{
+  "contract_version": "bifrost.device-lifecycle/v1",
+  "source_repository": "MTG-Thomas/bifrost-workspace",
+  "source_commit": "852b0ae6888b54dd8e0409c5f7bf898e757f36f7",
+  "source_path": "packages/device-lifecycle-contract",
+  "schema_sha256": "76de2248d578cf6ccf77247e591a62f05164558a8e26d9d95ed5c200cb275d7b",
+  "fixtures_sha256": "9bdba25eb34ae011f0952057f155b7b57257212c1b912ddf894e4840d543a93f"
+}
