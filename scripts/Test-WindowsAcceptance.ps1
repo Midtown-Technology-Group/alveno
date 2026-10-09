@@ -18,8 +18,24 @@ if ($LASTEXITCODE -ne 0) { throw 'Bootstrap could not reconnect.' }
 $status = (& $executable status | ConvertFrom-Json)
 if ($LASTEXITCODE -ne 0 -or -not $status.session_id) { throw 'Registration has not been verified.' }
 if ($status.last_outcome -ne 'connected') { throw 'Fresh authenticated connection has not been verified.' }
+if ($status.state -notin @('approved', 'handoff_ready')) { throw 'Technician approval is required before reboot acceptance.' }
+$stateDirectory = Split-Path $executable
+$restrictedSids = @('S-1-5-18', 'S-1-5-32-544')
+$paths = @($stateDirectory) + @(Get-ChildItem -LiteralPath $stateDirectory -Force | ForEach-Object FullName)
+foreach ($path in $paths) {
+    if ((Get-Item -LiteralPath $path -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'State paths must not be reparse points.' }
+    foreach ($rule in (Get-Acl -LiteralPath $path).Access) {
+        $sid = $rule.IdentityReference.Translate([Security.Principal.SecurityIdentifier]).Value
+        if ($rule.AccessControlType -eq 'Allow' -and $sid -notin $restrictedSids) { throw 'State access is not restricted to SYSTEM and Administrators.' }
+    }
+}
+$providerName = if ($status.software_key_fallback) { 'Microsoft Software Key Storage Provider' } else { 'Microsoft Platform Crypto Provider' }
+$key = [Security.Cryptography.CngKey]::Open(('BiFrostDeviceLifecycle-' + $status.installation_id), [Security.Cryptography.CngProvider]::new($providerName), [Security.Cryptography.CngKeyOpenOptions]::MachineKey)
+try {
+    if (-not $key.IsMachineKey -or $key.ExportPolicy -ne [Security.Cryptography.CngExportPolicies]::None) { throw 'A non-exportable machine enrollment key is required.' }
+} finally { $key.Dispose() }
 New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
-$evidence = @{ phase = $Phase; observed_at = [DateTimeOffset]::UtcNow.ToString('o'); status = $status; boot = (Get-CimInstance Win32_OperatingSystem).LastBootUpTime.ToUniversalTime().ToString('o'); task_user = $task.Principal.UserId; signature_status = [string]$signature.Status; publisher = $signature.SignerCertificate.Subject }
+$evidence = @{ phase = $Phase; observed_at = [DateTimeOffset]::UtcNow.ToString('o'); status = $status; boot = (Get-CimInstance Win32_OperatingSystem).LastBootUpTime.ToUniversalTime().ToString('o'); task_user = $task.Principal.UserId; signature_status = [string]$signature.Status; publisher = $signature.SignerCertificate.Subject; state_acl_verified = $true; nonexportable_machine_key_verified = $true }
 if ($Phase -eq 'AfterReboot') {
     $previous = Get-Content -LiteralPath (Join-Path $OutputPath 'BeforeReboot.json') -Raw | ConvertFrom-Json
     if ($previous.status.session_id -ne $status.session_id -or $previous.status.installation_id -ne $status.installation_id) { throw 'Session or installation identity was lost across reboot.' }
