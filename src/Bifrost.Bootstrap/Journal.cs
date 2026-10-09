@@ -31,7 +31,9 @@ public sealed class Journal(string directory)
     {
         var path = Path.Combine(directory, "checkpoint.json");
         if (!File.Exists(path)) throw new InvalidOperationException("installation_required");
-        var checkpoint = JsonSerializer.Deserialize(File.ReadAllBytes(path), CheckpointJson.Default.Checkpoint)
+        // An open status reader must not prevent the writer's atomic replacement.
+        using var file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete);
+        var checkpoint = JsonSerializer.Deserialize(file, CheckpointJson.Default.Checkpoint)
             ?? throw new InvalidDataException("invalid_checkpoint");
         if (checkpoint.JournalVersion != 1) throw new InvalidDataException("unsupported_checkpoint_version");
         return checkpoint;

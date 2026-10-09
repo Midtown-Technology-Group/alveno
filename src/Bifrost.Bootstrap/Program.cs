@@ -9,13 +9,14 @@ public static class Program
     public static int Main(string[] args)
     {
         if (!OperatingSystem.IsWindows()) { Console.Error.WriteLine("windows_required"); return 2; }
-        using var mutex = new Mutex(false, @"Global\BiFrostDeviceLifecycle");
-        try { if (!mutex.WaitOne(0)) return 0; } catch (AbandonedMutexException) { }
+        var command = args.FirstOrDefault() ?? "status";
+        // Status reads an atomic checkpoint and must remain available during work.
+        using var mutex = command == "status" ? null : new Mutex(false, @"Global\BiFrostDeviceLifecycle");
+        try { if (mutex != null && !mutex.WaitOne(0)) return 0; } catch (AbandonedMutexException) { }
         try
         {
             var directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "MTG", "BiFrostBootstrap");
             var journal = new Journal(directory);
-            var command = args.FirstOrDefault() ?? "status";
             if (command == "install")
             {
                 var endpoint = Argument(args, "--endpoint");
@@ -71,7 +72,7 @@ public static class Program
             // Exception messages may contain paths, server bodies or credential metadata.
             Console.Error.WriteLine(error is OperationCanceledException ? "bounded_run_timeout" : "bootstrap_intervention_required"); return 1;
         }
-        finally { mutex.ReleaseMutex(); }
+        finally { mutex?.ReleaseMutex(); }
     }
     private static string Argument(string[] args, string flag)
     {
