@@ -89,6 +89,9 @@ jobs:
           ./scripts/Verify-LabSignedArtifact.ps1 -Executable dist/win-x64/bifrost-bootstrap.exe -PublisherSubject $env:PUBLISHER_SUBJECT -UnsignedSha256 $env:UNSIGNED_SHA256 -SourceCommit $env:GITHUB_SHA -OutputPath lab-release/signing-evidence.json
           Copy-Item dist/win-x64/bifrost-bootstrap.exe lab-release/
           Copy-Item docs/signing/microsoft-private-trust-root-2020.cer lab-release/
+          Copy-Item LICENSE,NOTICE lab-release/
+          git archive --format=zip -o lab-release/source.zip $env:GITHUB_SHA
+          if ($LASTEXITCODE -ne 0) { throw 'Exact corresponding source archive failed.' }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: bifrost-bootstrap-private-lab-${{ github.sha }}
