@@ -29,7 +29,8 @@ SDK. `scripts/Build-Windows.ps1` runs the checks and produces an **unsigned**
 checks that Linux cannot verify. ARM64 is deferred until separately validated.
 
 CI checks Linux compilation, shared fixtures/reconciliation, formatting, Windows
-Native AOT and security guards, C# CodeQL and secret history. All compiler/analyzer
+Native AOT and security guards, and secret history. GitHub’s existing extended
+CodeQL setup scans C# and workflow Actions; it remains the single CodeQL producer. All compiler/analyzer
 warnings are errors. The application has no external NuGet package dependencies
 and no separately installed .NET runtime requirement.
 

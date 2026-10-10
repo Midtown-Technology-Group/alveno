@@ -18,7 +18,8 @@ behavior without adding a separately maintained test framework or runtime.
 
 Submit focused pull requests with the problem, resulting behavior and actual
 verification. CI builds on Linux and Windows, checks formatting and signatures'
-rejection guards, audits history for secrets, and scans C# with CodeQL. PRs have
+rejection guards, audits history for secrets, and uses the existing extended CodeQL setup for C#
+and workflow Actions. PRs have
 no signing access. Signing is a separate main-only, protected, manually dispatched
 lab workflow. Never include machine credentials, private keys, customer data,
 raw checkpoints or diagnostic bundles in issues or logs.
