@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Midtown Technology Group
+// SPDX-License-Identifier: AGPL-3.0-only
+
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -55,11 +58,19 @@ public sealed class Client(Journal journal, Checkpoint state, ECDsa key, HttpCli
         var next = state.LastAcknowledgedSequence + state.PendingEvents.Count + 1;
         var value = new ClientEvent
         {
-            ContractVersion = Version, SessionId = Session.SessionId, InstallationId = state.InstallationId,
-            Sequence = next, EventId = Guid.NewGuid().ToString(), EventType = diagnostic.Length == 0 ? "checkpoint" : "diagnostic",
-            Timestamp = DateTimeOffset.UtcNow.ToString("O"), Payload = new EventPayload
+            ContractVersion = Version,
+            SessionId = Session.SessionId,
+            InstallationId = state.InstallationId,
+            Sequence = next,
+            EventId = Guid.NewGuid().ToString(),
+            EventType = diagnostic.Length == 0 ? "checkpoint" : "diagnostic",
+            Timestamp = DateTimeOffset.UtcNow.ToString("O"),
+            Payload = new EventPayload
             {
-                BootId = state.BootId, Checkpoint = checkpoint, Result = "ok", Diagnostic = diagnostic.Length == 0 ? null : diagnostic
+                BootId = state.BootId,
+                Checkpoint = checkpoint,
+                Result = "ok",
+                Diagnostic = diagnostic.Length == 0 ? null : diagnostic
             }
         };
         value.Validate();

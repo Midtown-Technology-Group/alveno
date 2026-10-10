@@ -1,0 +1,21 @@
+name: Linux validation
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          global-json-file: global.json
+      - run: dotnet build Alveno.slnx -p:PublishAot=false
+      - run: pwsh -NoProfile -File scripts/Verify-Contract.ps1
+      - run: dotnet run --project tests/Bifrost.Bootstrap.Tests -p:PublishAot=false
+      - run: dotnet format whitespace Alveno.slnx --verify-no-changes --exclude src/Bifrost.Bootstrap/Protocol.cs

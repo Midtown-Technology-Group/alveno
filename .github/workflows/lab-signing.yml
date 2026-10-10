@@ -32,7 +32,7 @@ jobs:
             if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name))) { throw "Missing protected environment configuration: $name" }
           }
           $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; 'X-GitHub-Api-Version' = '2022-11-28' }
-          $base = 'https://api.github.com/repos/Midtown-Technology-Group/bifrost-device-bootstrap'
+          $base = 'https://api.github.com/repos/Midtown-Technology-Group/alveno'
           $environment = Invoke-RestMethod "$base/environments/lab-artifact-signing" -Headers $headers
           $policy = $environment.deployment_branch_policy
           if (-not $policy) { throw 'Signing environment must restrict deployment branches.' }
@@ -45,7 +45,7 @@ jobs:
           } else { throw 'Signing environment protection is unsupported.' }
       - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
         with:
-          dotnet-version: 10.0.401
+          global-json-file: global.json
       - name: Test and build Windows x64 Native AOT
         run: |
           ./scripts/Build-Windows.ps1

@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Midtown Technology Group
+// SPDX-License-Identifier: AGPL-3.0-only
+
 using System.Runtime.InteropServices;
 using Bifrost.DeviceLifecycle;
 
@@ -12,9 +15,14 @@ public static partial class Hardware
     {
         var value = new Registration
         {
-            ContractVersion = Client.Version, InstallationId = checkpoint.InstallationId, ClientKind = "windows_bootstrap",
-            PublicKey = publicKey, Architecture = RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? "arm64" : "x64",
-            BootEnvironment = "windows11", ClientVersion = "0.1.0", ObservedAt = DateTimeOffset.UtcNow.ToString("O")
+            ContractVersion = Client.Version,
+            InstallationId = checkpoint.InstallationId,
+            ClientKind = "windows_bootstrap",
+            PublicKey = publicKey,
+            Architecture = RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? "arm64" : "x64",
+            BootEnvironment = "windows11",
+            ClientVersion = "0.1.0",
+            ObservedAt = DateTimeOffset.UtcNow.ToString("O")
         };
         if (OperatingSystem.IsWindows()) ReadSmbios(value);
         return value;

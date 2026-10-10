@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Midtown Technology Group
+// SPDX-License-Identifier: AGPL-3.0-only
+
 using System.Security.Cryptography;
 using System.Security.AccessControl;
 using System.Security.Principal;
@@ -33,9 +36,21 @@ try
     Require(journal.Load().InstallationId == state.InstallationId, "partial write changed identity"); passed++;
     using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
     var identity = Hardware.Observe(state, Convert.ToBase64String(key.ExportSubjectPublicKeyInfo()));
-    var session = new Session { ContractVersion = Client.Version, SessionId = new string('a', 64), Registration = identity,
-        IdentitySha256 = new string('b', 64), PairingCode = "ABCDEFGH", State = "awaiting_claim", Revision = 1,
-        CreatedAt = DateTimeOffset.UtcNow.ToString("O"), ExpiresAt = DateTimeOffset.UtcNow.AddDays(1).ToString("O"), LastSeenAt = DateTimeOffset.UtcNow.ToString("O"), Events = [], OperatorEvents = [] };
+    var session = new Session
+    {
+        ContractVersion = Client.Version,
+        SessionId = new string('a', 64),
+        Registration = identity,
+        IdentitySha256 = new string('b', 64),
+        PairingCode = "ABCDEFGH",
+        State = "awaiting_claim",
+        Revision = 1,
+        CreatedAt = DateTimeOffset.UtcNow.ToString("O"),
+        ExpiresAt = DateTimeOffset.UtcNow.AddDays(1).ToString("O"),
+        LastSeenAt = DateTimeOffset.UtcNow.ToString("O"),
+        Events = [],
+        OperatorEvents = []
+    };
     state.SessionJson = JsonSerializer.Serialize(session, ProtocolJson.Default.Session);
     using var http = new HttpClient(); var client = new Client(journal, state, key, http);
     client.Enqueue("diagnostic_collected", "hardware_inventory");

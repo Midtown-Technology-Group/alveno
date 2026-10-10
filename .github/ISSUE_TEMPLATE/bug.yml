@@ -1,0 +1,22 @@
+name: Bug report
+description: Report a sanitized reproducible defect. Use private security reporting for vulnerabilities.
+body:
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and observed behavior
+      description: Do not include credentials, customer data or raw checkpoints.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or source commit and Windows build
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Sanitized reproduction steps
+    validations:
+      required: true

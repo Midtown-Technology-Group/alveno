@@ -1,71 +1,78 @@
-# BiFrost device bootstrap
+# Alveno
 
-Windows 11 enrollment client for the BiFrost device lifecycle. Phase 1 registers
-an unassigned session, reports typed diagnostic checkpoints, and observes
-technician approval. It performs no provisioning or remote commands.
+[![Windows validation](https://github.com/Midtown-Technology-Group/alveno/actions/workflows/windows-validation.yml/badge.svg)](https://github.com/Midtown-Technology-Group/alveno/actions/workflows/windows-validation.yml)
+[![Linux validation](https://github.com/Midtown-Technology-Group/alveno/actions/workflows/linux-validation.yml/badge.svg)](https://github.com/Midtown-Technology-Group/alveno/actions/workflows/linux-validation.yml)
 
-Contract and architecture live in
-[BiFrost Workspace](https://github.com/MTG-Thomas/bifrost-workspace/issues/1236).
-Track implementation in [issue 1](https://github.com/Midtown-Technology-Group/bifrost-device-bootstrap/issues/1).
+A small Windows 11 enrollment client for the BiFrost device lifecycle, written in
+C# and published as a self-contained Native AOT executable. It registers an
+unassigned device, proves possession of a machine-local key, reports typed
+checkpoints, and observes technician claim/approval through the coordination service.
 
-Windows x64 release artifacts require Native AOT, an approved Authenticode
-publisher, timestamp verification and recorded build provenance. A Linux test
-build cannot substitute for Windows acceptance. Keep signing credentials out of
-source, media, state files and logs.
+**Status: experimental phase-1 foundation.** Native AOT, TPM, restricted ACLs,
+SYSTEM task execution, live registration and reboot/offline replay have disposable
+lab evidence. Signed generic provisioning-package/OOBE delivery, Workspace claim
+and end-to-end approval remain unverified. There is no approved production release.
+
+## Build and validate
+
+Install .NET SDK **10.0.401**, pinned in `global.json`:
 
 ```sh
-dotnet build src/Bifrost.Bootstrap -p:PublishAot=false
+dotnet build Alveno.slnx -p:PublishAot=false
 dotnet run --project tests/Bifrost.Bootstrap.Tests -p:PublishAot=false
+dotnet format whitespace Alveno.slnx --verify-no-changes --exclude src/Bifrost.Bootstrap/Protocol.cs
 ```
 
-On a Windows host with the Visual C++/Windows SDK Native AOT prerequisites:
+Windows Native AOT additionally requires Visual C++ Build Tools and the Windows
+SDK. `scripts/Build-Windows.ps1` runs the checks and produces an **unsigned**
+`dist/win-x64/bifrost-bootstrap.exe`. Windows adds TPM and filesystem security
+checks that Linux cannot verify. ARM64 is deferred until separately validated.
 
-```powershell
-dotnet publish src/Bifrost.Bootstrap -r win-x64 -c Release -o dist\win-x64
+CI checks Linux compilation, shared fixtures/reconciliation, formatting, Windows
+Native AOT and security guards, C# CodeQL and secret history. All compiler/analyzer
+warnings are errors. The application has no external NuGet package dependencies
+and no separately installed .NET runtime requirement.
+
+## Operate
+
+```text
+bifrost-bootstrap.exe install --endpoint https://your-enrollment-origin.example/
+bifrost-bootstrap.exe run
+bifrost-bootstrap.exe status
+bifrost-bootstrap.exe uninstall
 ```
 
-Use `scripts/Install-Bootstrap.ps1` for both manual lab installation and package
-installation. It verifies publisher and binary hash before invoking `install`.
-Public endpoint and publisher metadata are the only package configuration.
-Software CNG key fallback requires explicit lab opt-in. Private keys remain
-non-exportable machine CNG keys. The status command reports the fallback.
+Use `scripts/Install-Bootstrap.ps1` with an independently verified, timestamped
+release, approved exact publisher and SHA-256. It is the same installer used by
+`scripts/Build-ProvisioningPackage.ps1`, which requires Windows Configuration
+Designer. Generic media contains only public endpoint/trust metadata and signed
+artifacts; it never contains customer credentials or reusable enrollment tokens.
 
-The startup task also repeats every minute, performs bounded work, and exits.
-Checkpoint/event writes are atomic; pending events stay durable until matched
-against server acknowledgment. No automatic uninstall occurs in Phase 1.
-Explicit rollback unregisters the task while retaining state for investigation.
+The startup Scheduled Task runs as SYSTEM, repeats every minute, does bounded work
+and exits. State under ProgramData is restricted to SYSTEM/Administrators, uses
+atomic checkpoints and rejects reparse points. TPM keys are machine-local and
+non-exportable; software fallback requires explicit lab opt-in. Read-only status
+remains available during execution. Uninstall removes the task while retaining
+state for investigation; phase 1 never automatically removes onboarding evidence.
 
-`scripts/Build-Windows.ps1` runs the shared fixtures and publishes win-x64 Native
-AOT with the Windows Visual C++ toolchain. Its output is an unsigned build,
-requiring protected signing before installer or OOBE acceptance. The private
-repository has no approved Windows CI runner; do not add a GitHub-hosted fallback
-around MTG's private CI policy. A disposable Windows build VM is the lab path.
+The repository is named Alveno. Existing `bifrost-bootstrap.exe`, task, namespace
+and ProgramData names remain stable so branding cannot reset installed identities.
 
-`scripts/Build-ProvisioningPackage.ps1` uses Windows Configuration Designer and
-the same verified installer as manual installation. The package contains only
-the signed executable, finite local installer and public trust metadata. It
-does not create users, bypass OOBE, embed passwords or contain an enrollment key.
-Run `Test-WindowsAcceptance.ps1` in a disposable VM before and after a real
-reboot, after technician claim/approval. Capture its structured JSON plus the
-Workspace timeline; never include key material. This script is an acceptance
-procedure, not recorded evidence that the VM test has run.
+## Boundaries and evidence
 
-The existing signing observer again found no certificate profiles in the MTG signing
-account on October 9, 2026 (run37932331548). Public Trust profile readiness, a test signature and
-signed VM acceptance remain unverified. Phase 2 may add artifact grants and
-typed provisioning only after this foundation's live evidence is complete.
+Alveno supports enrollment and typed diagnostics. Imaging, repair, destructive
+recovery, arbitrary shell/scripts, NinjaOne installation, domain joining and
+customer-specific provisioning belong to separate authorized phases/runtimes.
+Hardware identifiers and pairing codes are correlation evidence, not credentials.
 
-Installation replaces the state directory and existing descendants' DACLs with
-SYSTEM/Administrators-only permissions; it does not retain unrelated explicit
-allow entries. Reparse points on the state path or descendants fail closed, and
-the bounded traversal completes before device key/checkpoint access. This uses
-Windows filesystem ACL APIs and still requires the disposable Windows acceptance
-checks; a Linux compilation is not runtime ACL proof.
+- [Actual Windows lab evidence](docs/acceptance/windows-native-aot-lab-2026-10-09/README.md).
+- [Private Trust lab signing and rollback](docs/signing/private-lab.md).
+- [Contribution/build guidance](CONTRIBUTING.md) and [security reporting](SECURITY.md).
+- [Development changelog](CHANGELOG.md).
 
-[Recorded Windows lab evidence](docs/acceptance/windows-native-aot-lab-2026-10-09/README.md)
-now verifies Native AOT compilation, 25 Windows checks, TPM non-exportability,
-restricted ACLs, SYSTEM task execution, live registration, offline reboot and
-idempotent reconnection. It is an unsigned development test; signed PPKG/OOBE
-and technician approval remain unverified. Read-only structured status is
-available during task execution; `scripts/Test-WindowsStatus.ps1` checks that
-regression on a disposable installed test fixture.
+The versioned protocol's schema and generated models are owned by BiFrost Workspace.
+Bundled schema, fixtures and DTO provenance are pinned in `contract/provenance.json`;
+`scripts/Verify-Contract.ps1` checks their digests without requiring private upstream
+access. Do not maintain a second protocol or device/customer identity registry here.
+
+Source is **AGPL-3.0-only**; see [LICENSE](LICENSE) and [NOTICE](NOTICE).
