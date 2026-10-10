@@ -1,0 +1,15 @@
+Alveno
+Copyright (c) 2026 Midtown Technology Group
+
+Project-authored software is licensed under GNU Affero General Public License
+version 3 only (SPDX: AGPL-3.0-only). See LICENSE for the full terms.
+
+The unmodified Microsoft Enterprise Identity Verification Root Certificate
+Authority 2020 certificate is public trust metadata published by Microsoft.
+Its presence does not imply Microsoft endorsement. See docs/signing/private-lab.md
+for its official origin, digest and disposable-lab trust boundary.
+
+Protocol.cs, contract/schema.json and contract/fixtures.json are generated or
+copied from the MTG-owned BiFrost device lifecycle contract. Their exact source
+and digests are retained in contract/provenance.json. They must be updated from
+that source rather than independently maintained here.

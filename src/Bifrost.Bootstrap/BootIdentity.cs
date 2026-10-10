@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Midtown Technology Group
+// SPDX-License-Identifier: AGPL-3.0-only
+
 using Microsoft.Win32;
 using System.Runtime.Versioning;
 

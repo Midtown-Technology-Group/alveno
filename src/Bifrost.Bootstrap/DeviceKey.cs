@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Midtown Technology Group
+// SPDX-License-Identifier: AGPL-3.0-only
+
 using System.Runtime.Versioning;
 using System.Security.Cryptography;
 
@@ -23,8 +26,10 @@ public static class DeviceKey
                     ? CngKey.Open(name, provider, CngKeyOpenOptions.MachineKey)
                     : CngKey.Create(CngAlgorithm.ECDsaP256, name, new CngKeyCreationParameters
                     {
-                        Provider = provider, KeyCreationOptions = CngKeyCreationOptions.MachineKey,
-                        ExportPolicy = CngExportPolicies.None, KeyUsage = CngKeyUsages.Signing
+                        Provider = provider,
+                        KeyCreationOptions = CngKeyCreationOptions.MachineKey,
+                        ExportPolicy = CngExportPolicies.None,
+                        KeyUsage = CngKeyUsages.Signing
                     });
                 checkpoint.KeyProvider = providerName;
                 return new ECDsaCng(key);

@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Midtown Technology Group
+# SPDX-License-Identifier: AGPL-3.0-only
+
 [CmdletBinding()]
 param([string]$OutputPath = (Join-Path $PSScriptRoot '..\dist\win-x64'))
 $ErrorActionPreference = 'Stop'

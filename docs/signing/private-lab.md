@@ -24,7 +24,7 @@ or billing changes are made by this implementation.
 Federation configuration for the release identity:
 
 - Issuer: `https://token.actions.githubusercontent.com`.
-- Subject: `repo:Midtown-Technology-Group/bifrost-device-bootstrap:environment:lab-artifact-signing`.
+- Subject: `repo:Midtown-Technology-Group/alveno:environment:lab-artifact-signing`.
 - Audience: `api://AzureADTokenExchange`.
 - Subscription: `a1d63b24-1202-4bfa-9086-cf32d1d352fc`.
 - Assign **Artifact Signing Certificate Profile Signer** only at
