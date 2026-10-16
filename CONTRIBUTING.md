@@ -1,6 +1,6 @@
 # Contributing to Alveno
 
-Use .NET SDK 10.0.401. `global.json` deliberately rejects unreviewed SDK drift.
+Use .NET SDK 10.0.402. `global.json` deliberately rejects unreviewed SDK drift.
 The Windows x64 Native AOT build also needs the Visual C++ toolchain and Windows
 SDK described in [Microsoft's prerequisites](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/).
 

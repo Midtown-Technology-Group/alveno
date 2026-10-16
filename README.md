@@ -15,7 +15,7 @@ and end-to-end approval remain unverified. There is no approved production relea
 
 ## Build and validate
 
-Install .NET SDK **10.0.401**, pinned in `global.json`:
+Install .NET SDK **10.0.402**, pinned in `global.json`:
 
 ```sh
 dotnet build Alveno.slnx -p:PublishAot=false
